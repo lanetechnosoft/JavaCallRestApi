@@ -70,11 +70,12 @@ public class CallUmoneyToken {
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     //.header("Authorization", "Basic YmFuay1qZGItY2xpZW50aWQ6YmFuay1qZGItY2xpZW50czNjcjN0")
                     .build();
+            /* result One*/
             /*
             HttpResponse<?> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(resp.statusCode() + resp.body().toString());
              */
-
+            /* Result Two */
             HttpResponse<String> response = (HttpResponse<String>) httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             // print status code
@@ -101,27 +102,5 @@ public class CallUmoneyToken {
 
             System.err.println("Exception " + e.getMessage());
         }
-    }
-
-    private static Reader traceReader(final Reader reader) {
-        return new Reader() {
-            @Override
-            public int read(final char[] buffer, final int offset, final int length)
-                    throws IOException {
-                final int read = reader.read(buffer, offset, length);
-                if (read != -1) {
-                    // or any other appropriate tracing output here
-                    System.out.print(new String(buffer, offset, read));
-                    System.out.flush();
-                }
-                return read;
-            }
-
-            @Override
-            public void close()
-                    throws IOException {
-                reader.close();
-            }
-        };
     }
 }
