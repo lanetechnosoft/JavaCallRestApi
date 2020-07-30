@@ -23,6 +23,11 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import javademo.model.Token;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
  *
@@ -65,18 +70,58 @@ public class CallUmoneyToken {
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     //.header("Authorization", "Basic YmFuay1qZGItY2xpZW50aWQ6YmFuay1qZGItY2xpZW50czNjcjN0")
                     .build();
+            /*
             HttpResponse<?> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(resp.statusCode() + resp.body().toString());
+             */
 
             HttpResponse<String> response = (HttpResponse<String>) httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             // print status code
-            System.out.println(response.statusCode());
+            //System.out.println(response.statusCode());
             // print response body
-            System.out.println(response.body());
+            //System.out.println(response.body());
+            JsonReader reader = new JsonReader(new StringReader(response.body()));
+            reader.beginObject();
+            //if (reader.hasNext()) {
+            while (reader.hasNext()) {
+                if (reader.nextName().equals("access_token")) {
+                    //if (token.equals("access_token")) {
+                    //response = reader.nextString();
+                    String res = reader.nextString();
+                    System.out.println(res);
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+            reader.close();
+
         } catch (Exception e) {
 
             System.err.println("Exception " + e.getMessage());
         }
+    }
+
+    private static Reader traceReader(final Reader reader) {
+        return new Reader() {
+            @Override
+            public int read(final char[] buffer, final int offset, final int length)
+                    throws IOException {
+                final int read = reader.read(buffer, offset, length);
+                if (read != -1) {
+                    // or any other appropriate tracing output here
+                    System.out.print(new String(buffer, offset, read));
+                    System.out.flush();
+                }
+                return read;
+            }
+
+            @Override
+            public void close()
+                    throws IOException {
+                reader.close();
+            }
+        };
     }
 }
